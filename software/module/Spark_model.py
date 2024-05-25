@@ -1,44 +1,63 @@
+import sparkapi
 
-from typing import Optional, Any
-
-from sparkai.core.callbacks import BaseCallbackHandler
-from sparkai.llm.llm import ChatSparkLLM, ChunkPrintHandler
-from sparkai.core.messages import ChatMessage
-try:
-    from dotenv import load_dotenv
-except ImportError:
-    raise RuntimeError('Python environment for SPARK AI is not completely set up: required package "python-dotenv" is missing.') from None
-
-load_dotenv()
+appid = "f3767b32"
+api_key = "6eff91ce581e5cb276db75ba91552377"
+api_secret = "NGRkZWYwOGFlYmRmYmVjODQxYWJkNjE5"
+domain = "generalv3.5"
 
 
-class MyHandler(BaseCallbackHandler):
-    def __init__(self, color: Optional[str] = None) -> None:
-        self.color = color
-
-    def on_llm_new_token(self, token: str, *, chunk: None, **kwargs: Any, ):
-        print(token)
 
 
-def test_stream():
 
-    spark = ChatSparkLLM(
-        spark_api_url="wss://spark-api.xf-yun.com/v3.5/chat",
-        spark_app_id="f3767b32",
-        spark_api_key="6eff91ce581e5cb276db75ba91552377",
-        spark_api_secret="NGRkZWYwOGFlYmRmYmVjODQxYWJkNjE5",
-        spark_llm_domain="generalv3.5",
-        streaming=True,
-    )
-    messages = [
-                ChatMessage(
-                        role="user",
-                        content='你好'
-
-    )]
-    handler = MyHandler()
-    a = spark.generate([messages], callbacks=[handler])
-    print(a)
+Spark_url = "wss://spark-api.xf-yun.com/v3.5/chat"  # Max服务地址
 
 
-test_stream()
+# 初始上下文内容，当前可传system、user、assistant 等角色
+text = []
+
+
+def getText(role, content):
+    jsoncon = {}
+    jsoncon["role"] = role
+    jsoncon["content"] = content
+    text.append(jsoncon)
+    return text
+
+
+def getlength(text):
+    length = 0
+    for content in text:
+        temp = content["content"]
+        leng = len(temp)
+        length += leng
+    return length
+
+
+def checklen(text):
+    while (getlength(text) > 8000):
+        del text[0]
+    return text
+
+
+
+
+def spark_chat():
+    """
+    Spark聊天机器人
+    :return:
+    """
+    answer = []  # 答案列表,answer[-1]为最新答案
+    while (1):
+        Input = input()
+        question = checklen(getText("user", Input))
+        sparkapi.answer = ""
+        sparkapi.main(appid, api_key, api_secret, Spark_url, domain, question)
+        answer.append(sparkapi.answer)
+        getText("assistant", sparkapi.answer)
+
+
+
+
+
+
+
