@@ -184,7 +184,9 @@ class get_result(object):
         image.save("itr/result.jpg")  # 保存图片
 
 
-if __name__ == '__main__':
+
+def math_eq_correction():
+    # 图片默认在itr文件夹下，文件名为itr.jpg
     host = "rest-api.xfyun.cn"
     gClass = get_result(host)
     gClass.call_url()

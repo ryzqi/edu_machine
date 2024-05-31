@@ -212,10 +212,11 @@ def checklen(text):
 
 if __name__ == '__main__':
 
-    def object_recognition():
+    def object_recognition(image_path):
         global answer
         global text
         img_path = get_image()
+        # img_path = image_path  #传入图片路径
         imagedata = open(img_path, 'rb').read()
         text = [{"role": "user", "content": str(base64.b64encode(imagedata), 'utf-8'), "content_type": "image"}]
         ans = []
