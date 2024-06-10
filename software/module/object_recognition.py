@@ -15,13 +15,11 @@ import websocket  # 使用websocket_client
 import cv2
 import time
 
-
 appid = "f3767b32"
 api_secret = "NGRkZWYwOGFlYmRmYmVjODQxYWJkNjE5"
-api_key ="6eff91ce581e5cb276db75ba91552377"
-answer = ""
+api_key = "6eff91ce581e5cb276db75ba91552377"
+
 imageunderstanding_url = "wss://spark-api.cn-huabei-1.xf-yun.com/v2.1/image"
-text = []
 
 
 def get_image(output_folder='image', filename='img.jpg'):
@@ -116,7 +114,7 @@ def on_error(ws, error):
 
 
 # 收到websocket关闭的处理
-def on_close(ws,one,two):
+def on_close(ws, one, two):
     print(" ")
 
 
@@ -126,7 +124,7 @@ def on_open(ws):
 
 
 def run(ws, *args):
-    data = json.dumps(gen_params(appid=ws.appid, question= ws.question ))
+    data = json.dumps(gen_params(appid=ws.appid, question=ws.question))
     ws.send(data)
 
 
@@ -141,9 +139,8 @@ def on_message(ws, message):
         choices = data["payload"]["choices"]
         status = choices["status"]
         content = choices["text"][0]["content"]
-        print(content,end ="")
-        global answer
-        answer += content
+        global answero
+        answero += content
         if status == 2:
             ws.close()
 
@@ -171,19 +168,18 @@ def gen_params(appid, question):
                 "text": question
             }
         }
-}
+    }
 
     return data
 
 
-def main(appid, api_key, api_secret, imageunderstanding_url,question):
-
+def main(appid, api_key, api_secret, imageunderstanding_url, question):
     wsParam = Ws_Param(appid, api_key, api_secret, imageunderstanding_url)
     websocket.enableTrace(False)
     wsUrl = wsParam.create_url()
     ws = websocket.WebSocketApp(wsUrl, on_message=on_message, on_error=on_error, on_close=on_close, on_open=on_open)
     ws.appid = appid
-    #ws.imagedata = imagedata
+    # ws.imagedata = imagedata
     ws.question = question
     ws.run_forever(sslopt={"cert_reqs": ssl.CERT_NONE})
 
@@ -192,8 +188,8 @@ def getText(role, content):
     jsoncon = {}
     jsoncon["role"] = role
     jsoncon["content"] = content
-    text.append(jsoncon)
-    return text
+    texto.append(jsoncon)
+    return texto
 
 
 def getlength(text):
@@ -206,31 +202,41 @@ def getlength(text):
 
 
 def checklen(text):
-    while (getlength(text[1:])> 8000):
+    while (getlength(text[1:]) > 8000):
         del text[1]
     return text
 
-if __name__ == '__main__':
 
-    def object_recognition(image_path):
-        global answer
-        global text
-        img_path = get_image()
-        # img_path = image_path  #传入图片路径
+answero = ""
+texto = []
+ans = []
+
+
+def object_recognition(message, image_path=None):
+    global answero
+    global texto
+    global ans
+    if image_path:
+        img_path = image_path  # 传入图片路径，保存在image里
         imagedata = open(img_path, 'rb').read()
-        text = [{"role": "user", "content": str(base64.b64encode(imagedata), 'utf-8'), "content_type": "image"}]
-        ans = []
-        while(1):
-            Input = input("\n" +"问:")
-            question = checklen(getText("user",Input))
-            answer = ""
-            print("答:",end = "")
-            main(appid, api_key, api_secret, imageunderstanding_url, question)
-            getText("assistant", answer)
-            ans.append(answer)
-            print(ans)
+        texto = [{"role": "user", "content": str(base64.b64encode(imagedata), 'utf-8'), "content_type": "image"}]
+    Input = message
+    question = checklen(getText("user", Input))
+    answero = ""
+    main(appid, api_key, api_secret, imageunderstanding_url, question)
+    getText("assistant", answero)
+    ans.append(answero)
+    return ans[-1]
 
 
-    object_recognition()
-
+def shutdown_cleanup_object_recognition():
+    """
+    清理函数，用于清空text和answer
+    """
+    global texto
+    global answero
+    global ans
+    texto.clear()
+    answero = ""
+    ans.clear()
 

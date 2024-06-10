@@ -57,12 +57,12 @@ def get_image(output_folder='itr', filename='itr.jpg'):
 
 class get_result(object):
     def __init__(self, host):
-        # 应用ID（到控制台获取）
-        self.APPID = "f3767b32"  # 请替换为你的APPID
-        # 接口APISercet（到控制台拍照速算服务页面获取）
-        self.Secret = "NGRkZWYwOGFlYmRmYmVjODQxYWJkNjE5"  # 请替换为你的Secret
-        # 接口APIKey（到控制台拍照速算服务页面获取）
-        self.APIKey = "6eff91ce581e5cb276db75ba91552377"  # 请替换为你的APIKey
+        # 应用ID
+        self.APPID = "f3767b32"
+        # 接口APISercet
+        self.Secret = "NGRkZWYwOGFlYmRmYmVjODQxYWJkNjE5"
+        # 接口APIKey
+        self.APIKey = "6eff91ce581e5cb276db75ba91552377"
         # 以下为POST请求
         self.Host = host
         self.RequestUri = "/v2/itr"
@@ -75,7 +75,7 @@ class get_result(object):
         curTime_utc = datetime.datetime.utcnow()
         self.Date = self.httpdate(curTime_utc)
         # 设置测试图片文件
-        self.AudioPath = "itr/itr.jpg"  # 请替换为你的图片路径
+        self.AudioPath = "itr/itr.jpg"
         self.BusinessArgs = {
             "ent": "math-arith",
             "aue": "raw",
@@ -180,7 +180,7 @@ class get_result(object):
                 draw.rectangle(((x1, y1), (x2, y2)), outline='red', width=2)    # 错误：红色
 
         # 展示图片
-        image.show()
+        # image.show()
         image.save("itr/result.jpg")  # 保存图片
 
 
@@ -190,3 +190,4 @@ def math_eq_correction():
     host = "rest-api.xfyun.cn"
     gClass = get_result(host)
     gClass.call_url()
+    return "itr/result.jpg"
