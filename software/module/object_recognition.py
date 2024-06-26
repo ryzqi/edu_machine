@@ -18,7 +18,6 @@ import time
 appid = "f3767b32"
 api_secret = "NGRkZWYwOGFlYmRmYmVjODQxYWJkNjE5"
 api_key = "6eff91ce581e5cb276db75ba91552377"
-
 imageunderstanding_url = "wss://spark-api.cn-huabei-1.xf-yun.com/v2.1/image"
 
 
@@ -239,4 +238,3 @@ def shutdown_cleanup_object_recognition():
     texto.clear()
     answero = ""
     ans.clear()
-

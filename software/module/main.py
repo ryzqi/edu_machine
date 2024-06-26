@@ -7,6 +7,8 @@ from Voice_Review import voice_review
 from mp3_to_pcm import mp3_to_pcm
 from Spark_model import spark_chat, shutdown_cleanup
 from object_recognition import object_recognition, shutdown_cleanup_object_recognition
+from Audio_To_Text import audio_to_text
+from audio import Record_Audio
 
 app = FastAPI()
 
@@ -14,7 +16,6 @@ app = FastAPI()
 class ObjectRecognitionRequest(BaseModel):
     message: str
     image_path: str | None = None
-
 
 
 class ChatMessage(BaseModel):
@@ -43,6 +44,10 @@ class MP3Request(BaseModel):
     AudioFile: str  # 语音文件路径
 
 
+class AudioToTextRequest(BaseModel):
+    AudioFile: str  # 待转文本语音文件路径
+
+
 @app.get("/数学算式批改")
 async def math_eq_correction_api():
     # 默认图片路径为"itr/itr.jpg",到时直接将图片保存在如上路径即可
@@ -65,6 +70,12 @@ async def Ocr(image_path: OcrImageRequest):
 @app.post("/语音评测")
 async def voice_review_api(request: VoiceReviewRequest):
     result = voice_review(request.ENT, request.CATEGORY, request.TEXT, request.AudioFile)
+    return {"result": result}
+
+
+@app.post("/语音转文本")
+async def audio_to_text_api(request: AudioToTextRequest):
+    result = audio_to_text(request.AudioFile)
     return {"result": result}
 
 
@@ -97,3 +108,9 @@ def shutdown_object_recognition_event():
     shutdown_cleanup_object_recognition()
     return {"message": "清理对象识别缓存成功"}
 
+
+@app.get("/录音")
+async def record_audio_api():
+    # "audio/audio.pcm"   默认保存地址
+    result = Record_Audio()
+    return {"result": result}
