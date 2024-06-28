@@ -10,6 +10,7 @@ from object_recognition import object_recognition, shutdown_cleanup_object_recog
 from Audio_To_Text import audio_to_text
 from audio import Record_Audio
 
+
 app = FastAPI()
 
 
@@ -46,6 +47,8 @@ class MP3Request(BaseModel):
 
 class AudioToTextRequest(BaseModel):
     AudioFile: str  # 待转文本语音文件路径
+
+
 
 
 @app.get("/数学算式批改")
@@ -114,3 +117,6 @@ async def record_audio_api():
     # "audio/audio.pcm"   默认保存地址
     result = Record_Audio()
     return {"result": result}
+
+
+
