@@ -1,11 +1,5 @@
-#   gevent==1.4.0
-#   greenlet==0.4.15
-#   pycparser==2.19
-#   six==1.12.0
-#   websocket==0.2.1
-#   websocket-client==0.56.0
-#
 
+import xml.etree.ElementTree as ET
 from builtins import Exception, str, bytes
 import websocket
 import datetime
@@ -134,13 +128,27 @@ def on_open(ws, wsParam):
     thread.start_new_thread(run, ())
 
 
-def voice_review(ENT, CATEGORY, TEXT, AudioFile):
-    # 中文：cn_vip， 英文：en_vip
+def parse_xml(xml_data):
+    # 解析XML数据
+    root = ET.fromstring(xml_data)
 
-    # 中文题型：read_syllable（单字朗读，汉语专有）read_word（词语朗读）
-    # read_sentence（句子朗读）read_chapter(篇章朗读)
-    # 英文题型：read_word（词语朗读）read_sentence（句子朗读）read_chapter(篇章朗读)
-    # simple_expression（英文情景反应）
+    # 查找sentence元素
+    sentence_element = root.find('.//sentence')
+
+    # 提取所需信息
+    sentence_info = {
+        '准确度分': sentence_element.get('accuracy_score'),
+        '标准度分': sentence_element.get('standard_score'),
+        '流畅度分': sentence_element.get('fluency_score'),
+        '总分': sentence_element.get('total_score')
+    }
+    return sentence_info
+
+
+def voice_review(ENT, CATEGORY, TEXT, AudioFile):
+    #  英文：en_vip
+
+    # 英文题型：read_sentence（句子朗读）
 
     # 待评测文本 utf8 编码，需要加utf8bom 头
     TEXT = '\uFEFF' + TEXT
@@ -161,68 +169,10 @@ def voice_review(ENT, CATEGORY, TEXT, AudioFile):
 
     # 获取并返回第一个结果
     decoded_xml = result_queue.get()
+    decoded_xml = parse_xml(decoded_xml)
     return decoded_xml
 
 
-# xml = voice_review("cn_vip", "read_sentence", '今天天气怎么样？', "read_sentence_cn.pcm")
-
-
-# <?xml version="1.0" encoding="UTF-8"?>
-#   <xml_result>
-#       <read_sentence lan="cn" type="study" version="7,0,0,1024">
-#           <rec_paper>
-#               <read_sentence accuracy_score="0.000000" beg_pos="0" content="今天天气怎么样。" emotion_score="0.000000" end_pos="146" except_info="0" fluency_score="81.685753" integrity_score="100.000000" is_rejected="false" phone_score="78.571426" time_len="146" tone_score="100.000000" total_score="81.539688">
-#                   <sentence beg_pos="0" content="今天天气怎么样" end_pos="146" fluency_score="0.000000" phone_score="78.571426" time_len="146" tone_score="100.000000" total_score="58.599205">
-#                       <word beg_pos="0" content="今" end_pos="9" symbol="jin1" time_len="9">
-#                           <syll beg_pos="0" content="fil" dp_message="32" end_pos="1" rec_node_type="fil" time_len="1">
-#                               <phone beg_pos="0" content="fil" dp_message="32" end_pos="1" rec_node_type="fil" time_len="1"></phone>
-#                           </syll>
-#                           <syll beg_pos="1" content="今" dp_message="0" end_pos="9" rec_node_type="paper" symbol="jin1" time_len="8">
-#                               <phone beg_pos="1" content="j" dp_message="0" end_pos="4" is_yun="0" perr_level_msg="3" perr_msg="1" rec_node_type="paper" time_len="3"></phone>
-#                               <phone beg_pos="4" content="in" dp_message="0" end_pos="9" is_yun="1" mono_tone="TONE1" perr_level_msg="3" perr_msg="1" rec_node_type="paper" time_len="5"></phone>
-#                           </syll>
-#                       </word>
-#                       <word beg_pos="9" content="天" end_pos="36" symbol="tian1" time_len="27">
-#                           <syll beg_pos="9" content="天" dp_message="0" end_pos="36" rec_node_type="paper" symbol="tian1" time_len="27">
-#                               <phone beg_pos="9" content="t" dp_message="0" end_pos="25" is_yun="0" perr_level_msg="1" perr_msg="0" rec_node_type="paper" time_len="16"></phone>
-#                               <phone beg_pos="25" content="ian" dp_message="0" end_pos="36" is_yun="1" mono_tone="TONE1" perr_level_msg="1" perr_msg="0" rec_node_type="paper" time_len="11"></phone>
-#                           </syll>
-#                       </word>
-#                       <word beg_pos="36" content="天" end_pos="54" symbol="tian1" time_len="18">
-#                           <syll beg_pos="36" content="天" dp_message="0" end_pos="54" rec_node_type="paper" symbol="tian1" time_len="18">
-#                               <phone beg_pos="36" content="t" dp_message="0" end_pos="42" is_yun="0" perr_level_msg="2" perr_msg="0" rec_node_type="paper" time_len="6"></phone>
-#                               <phone beg_pos="42" content="ian" dp_message="0" end_pos="54" is_yun="1" mono_tone="TONE1" perr_level_msg="1" perr_msg="0" rec_node_type="paper" time_len="12"></phone>
-#                           </syll>
-#                       </word>
-#                       <word beg_pos="54" content="气" end_pos="70" symbol="qi9" time_len="16">
-#                           <syll beg_pos="54" content="气" dp_message="0" end_pos="70" rec_node_type="paper" symbol="qi0" time_len="16">
-#                               <phone beg_pos="54" content="q" dp_message="0" end_pos="62" is_yun="0" perr_level_msg="1" perr_msg="0" rec_node_type="paper" time_len="8"></phone>
-#                               <phone beg_pos="62" content="i" dp_message="0" end_pos="70" is_yun="1" mono_tone="TONE0" perr_level_msg="1" perr_msg="0" rec_node_type="paper" time_len="8"></phone>
-#                           </syll>
-#                       </word>
-#                       <word beg_pos="70" content="怎" end_pos="80" symbol="zen3" time_len="10">
-#                           <syll beg_pos="70" content="怎" dp_message="0" end_pos="80" rec_node_type="paper" symbol="zen3" time_len="10">
-#                               <phone beg_pos="70" content="z" dp_message="0" end_pos="75" is_yun="0" perr_level_msg="1" perr_msg="0" rec_node_type="paper" time_len="5"></phone>
-#                               <phone beg_pos="75" content="en" dp_message="0" end_pos="80" is_yun="1" mono_tone="TONE3" perr_level_msg="3" perr_msg="1" rec_node_type="paper" time_len="5"></phone>
-#                           </syll>
-#                       </word>
-#                       <word beg_pos="80" content="么" end_pos="89" symbol="me5" time_len="9">
-#                           <syll beg_pos="80" content="么" dp_message="0" end_pos="89" rec_node_type="paper" symbol="me0" time_len="9">
-#                               <phone beg_pos="80" content="m" dp_message="0" end_pos="84" is_yun="0" perr_level_msg="1" perr_msg="0" rec_node_type="paper" time_len="4"></phone>
-#                               <phone beg_pos="84" content="e" dp_message="0" end_pos="89" is_yun="1" mono_tone="TONE0" perr_level_msg="1" perr_msg="0" rec_node_type="paper" time_len="5"></phone>
-#                           </syll>
-#                       </word>
-#                       <word beg_pos="89" content="样" end_pos="146" symbol="yang4" time_len="57">
-#                           <syll beg_pos="89" content="样" dp_message="0" end_pos="108" rec_node_type="paper" symbol="yang4" time_len="19">
-#                               <phone beg_pos="89" content="_i" dp_message="0" end_pos="92" is_yun="0" perr_level_msg="1" perr_msg="0" rec_node_type="paper" time_len="3"></phone>
-#                               <phone beg_pos="92" content="iang" dp_message="0" end_pos="108" is_yun="1" mono_tone="TONE4" perr_level_msg="1" perr_msg="0" rec_node_type="paper" time_len="16"></phone>
-#                           </syll>
-#                           <syll beg_pos="108" content="sil" dp_message="0" end_pos="146" rec_node_type="sil" time_len="38">
-#                               <phone beg_pos="108" content="sil" end_pos="146" time_len="38"></phone>
-#                           </syll>
-#                       </word>
-#                   </sentence>
-#               </read_sentence>
-#           </rec_paper>
-#       </read_sentence>
-#   </xml_result>
+# xml = voice_review("en_vip", "read_sentence", 'How are you?', "audio/audio.pcm")
+# print(xml)
+# {'准确度分': '3.552058', '标准度分': '3.330751', '流畅度分': '3.711770', '总分': '3.577841'}
