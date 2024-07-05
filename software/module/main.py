@@ -82,10 +82,10 @@ async def audio_to_text_api(request: AudioToTextRequest):
     return {"result": result}
 
 
-@app.post("/MP3转PCM")
-async def mp3_to_pcm_api(request: MP3Request):
-    result = mp3_to_pcm(request.AudioFile)  # 路径
-    return {"result": result}
+# @app.post("/MP3转PCM")
+# async def mp3_to_pcm_api(request: MP3Request):
+#    result = mp3_to_pcm(request.AudioFile)  # 路径
+#     return {"result": result}
 
 
 @app.post("/Spark对话")
