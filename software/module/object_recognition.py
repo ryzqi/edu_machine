@@ -5,15 +5,16 @@ import hashlib
 import hmac
 import json
 import os
-from urllib.parse import urlparse
 import ssl
 from datetime import datetime
 from time import mktime
 from urllib.parse import urlencode
+from urllib.parse import urlparse
 from wsgiref.handlers import format_date_time
-import websocket  # 使用websocket_client
+
 import cv2
-import time
+import pyttsx3
+import websocket  # 使用websocket_client
 
 appid = "f3767b32"
 api_secret = "NGRkZWYwOGFlYmRmYmVjODQxYWJkNjE5"
@@ -225,6 +226,7 @@ def object_recognition(message, image_path=None):
     main(appid, api_key, api_secret, imageunderstanding_url, question)
     getText("assistant", answero)
     ans.append(answero)
+    pyttsx3.speak(ans[-1])
     return ans[-1]
 
 
