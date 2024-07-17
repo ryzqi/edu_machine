@@ -1,3 +1,5 @@
+import pyttsx3
+
 import sparkapi
 
 appid = "f3767b32"
@@ -47,6 +49,7 @@ def spark_chat(message):
     sparkapi.main(appid, api_key, api_secret, Spark_url, domain, question)
     answers.append(sparkapi.answer)
     getText("assistant", sparkapi.answer)
+    pyttsx3.speak(answers[-1])
     return answers[-1]
 
 
@@ -56,4 +59,3 @@ def shutdown_cleanup():
     """
     text.clear()
     answers.clear()
-
